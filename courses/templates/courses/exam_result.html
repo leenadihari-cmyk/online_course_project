@@ -1,12 +1,49 @@
+<!-- courses/templates/exam_result.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Exam Result</title>
+    <meta charset="UTF-8">
+    <title>Exam Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .correct { color: green; }
+        .wrong { color: red; }
+        .question { margin-bottom: 20px; }
+        .back-link { margin-top: 20px; display: block; }
+    </style>
 </head>
 <body>
-<h1>Congratulations!</h1>
-<p>User: {{ submission.user.username }}</p>
-<p>Course: {{ submission.course.name }}</p>
-<p>Score: {{ submission.score }}</p>
+    <h1>Congratulations, {{ submission.user.username }}!</h1>
+    <p>You scored {{ submission.score }} out of {{ course.question_set.count }}.</p>
+
+    <h2>Exam Results:</h2>
+
+    {% for question in course.question_set.all %}
+        <div class="question">
+            <strong>{{ question.text }}</strong><br>
+            <p>Correct Answer(s):</p>
+            <ul>
+                {% for choice in question.choices.all %}
+                    {% if choice.is_correct %}
+                        <li class="correct">{{ choice.text }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            {% comment %}
+            Display user's selected choice for this question
+            {% endcomment %}
+            <p>Your Answer(s):</p>
+            <ul>
+                {% for choice in question.choices.all %}
+                    {% if choice.id|stringformat:"s" in request.POST %}
+                        <li>{{ choice.text }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+
+    <a class="back-link" href="{% url 'home' %}">Back to Courses</a>
 </body>
 </html>
