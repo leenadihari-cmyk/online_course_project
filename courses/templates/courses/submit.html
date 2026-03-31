@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Exam - {{ course.name }}</title>
+</head>
+<body>
+<h1>{{ course.name }} - Exam</h1>
+<form method="post">
+    {% csrf_token %}
+    {% for question in course.question_set.all %}
+        <p>{{ question.text }}</p>
+        {% for choice in question.choices.all %}
+            <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}">
+            {{ choice.text }}<br>
+        {% endfor %}
+    {% endfor %}
+    <button type="submit">Submit</button>
+</form>
+{% if score %}
+    <p>Your Score: {{ score }}</p>
+{% endif %}
+</body>
+</html>
